@@ -17,6 +17,14 @@ function buildUserDataScript(githubRegistrationToken, label) {
   } else {
     return [
       '#!/bin/bash',
+      'apt-get update -y && apt-get install ca-certificates curl gnupg lsb-release',
+      'mkdir -p /etc/apt/keyrings',
+      'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg',
+      'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null',
+      'apt-get update  -y',
+      'apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin',
+      'sudo groupadd docker',
+      'sudo gpasswd -a $USER docker',
       'mkdir actions-runner && cd actions-runner',
       'case $(uname -m) in aarch64) ARCH="arm64" ;; amd64|x86_64) ARCH="x64" ;; esac && export RUNNER_ARCH=${ARCH}',
       'curl -O -L https://github.com/actions/runner/releases/download/v2.299.1/actions-runner-linux-${RUNNER_ARCH}-2.299.1.tar.gz',
